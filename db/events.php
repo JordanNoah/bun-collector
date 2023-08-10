@@ -51,6 +51,20 @@ $observers = [
         'priority'=>9999
     ],
     [
+        'eventname'=>'\core\event\role_assigned',
+        'callback'=>'local_collector_alert_bun_observer::role_assigned',
+        'includefile'=>null,
+        'internal'=>true,
+        'priority'=>9999
+    ],
+    [
+        'eventname'=>'\core\event\role_unassigned',
+        'callback'=>'',
+        'includefile'=>null,
+        'internal'=>true,
+        'priority'=>9999
+    ],
+    [
         'eventname'=>'\core\event\user_created',
         'callback'=>'local_collector_alert_bun_observer::user_created',
         'includefile'=>null,
@@ -59,35 +73,35 @@ $observers = [
     ],
     [
         'eventname'=>'\core\event\user_deleted',
-        'callback'=>'',
+        'callback'=>'local_collector_alert_bun_observer::user_deleted',
         'includefile'=>null,
         'internal'=>true,
         'priority'=>9999
     ],
     [
         'eventname'=>'\core\event\user_updated',
-        'callback'=>'',
+        'callback'=>'local_collector_alert_bun_observer::user_updated',
         'includefile'=>null,
         'internal'=>true,
         'priority'=>9999
     ],
     [
         'eventname'=>'\core\event\user_enrolment_created',
-        'callback'=>'',
+        'callback'=>'local_collector_alert_bun_observer::enrolment_created',
         'includefile'=>null,
         'internal'=>true,
         'priority'=>9999
     ],
     [
         'eventname'=>'\core\event\user_enrolment_deleted',
-        'callback'=>'',
+        'callback'=>'local_collector_alert_bun_observer::enrolment_deleted',
         'includefile'=>null,
         'internal'=>true,
         'priority'=>9999
     ],
     [
         'eventname'=>'\core\event\user_enrolment_updated',
-        'callback'=>'',
+        'callback'=>'local_collector_alert_bun_observer::enrolment_updated',
         'includefile'=>null,
         'internal'=>true,
         'priority'=>9999
@@ -108,7 +122,7 @@ $observers = [
     ],
     [
         'eventname'=>'\core\event\course_updated',
-        'callback'=>'',
+        'callback'=>'local_collector_alert_bun_observer::course_updated',
         'includefile'=>null,
         'internal'=>true,
         'priority'=>9999
