@@ -3,49 +3,49 @@
 $observers = [
     [
         'eventname'=>'\core\event\course_module_created',
-        'callback'=>'',
+        'callback'=>'local_collector_alert_bun_observer::course_module_created',
         'includefile'=>null,
         'internal'=>true,
         'priority'=>9999
     ],
     [
         'eventname'=>'\core\event\course_module_deleted',
-        'callback'=>'',
+        'callback'=>'local_collector_alert_bun_observer::course_module_deleted',
         'includefile'=>null,
         'internal'=>true,
         'priority'=>9999
     ],
     [
         'eventname'=>'\core\event\course_module_updated',
-        'callback'=>'',
+        'callback'=>'local_collector_alert_bun_observer::course_module_updated',
         'includefile'=>null,
         'internal'=>true,
         'priority'=>9999
     ],
     [
         'eventname'=>'\core\event\course_module_completion_updated',
-        'callback'=>'',
+        'callback'=>'local_collector_alert_bun_observer::course_module_completion_updated',
         'includefile'=>null,
         'internal'=>true,
         'priority'=>9999
     ],
     [
         'eventname'=>'\core\event\message_sent',
-        'callback'=>'',
+        'callback'=>'local_collector_alert_bun_observer::message_sent',
         'includefile'=>null,
         'internal'=>true,
         'priority'=>9999
     ],
     [
         'eventname'=>'\core\event\message_viewed',
-        'callback'=>'',
+        'callback'=>'local_collector_alert_bun_observer::message_viewed',
         'includefile'=>null,
         'internal'=>true,
         'priority'=>9999
     ],
     [
         'eventname'=>'\core\event\message_deleted',
-        'callback'=>'',
+        'callback'=>'local_collector_alert_bun_observer::message_deleted',
         'includefile'=>null,
         'internal'=>true,
         'priority'=>9999
@@ -59,7 +59,7 @@ $observers = [
     ],
     [
         'eventname'=>'\core\event\role_unassigned',
-        'callback'=>'',
+        'callback'=>'local_collector_alert_bun_observer::role_unassigned',
         'includefile'=>null,
         'internal'=>true,
         'priority'=>9999
