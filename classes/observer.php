@@ -324,8 +324,11 @@ class local_collector_alert_bun_observer
     public static function course_module_created(\core\event\course_module_created $event){
         $event_data = $event->get_data();
 
-        $course_module = get_coursemodule_from_id('', $event_data['objectid'], $event->courseid, false, MUST_EXIST);
-
+        $moduleCore = self::getModule(
+            $event_data["other"]["instanceid"],
+            $event_data["courseid"],
+            $event_data["other"]["modulename"]
+        );
 
         $fired_at = gmdate('Y-m-d\TH:i:s.000\Z',$event_data["timecreated"]);
         $rabbit_object["contextid"] = $event_data["contextid"];
@@ -335,13 +338,20 @@ class local_collector_alert_bun_observer
         $rabbit_object["other"]["message_data"]['fired_at']= $fired_at;
         $rabbit_object["other"]["message_data"]["uuid"] = \core\uuid::generate();
         $rabbit_object["other"]["message_data"]["courseId"] = $event->courseid;
-        $rabbit_object["other"]["message_data"]["module"] = $course_module;
+        $rabbit_object["other"]["message_data"]["module"] = self::courseModule($moduleCore,$event_data["other"]["modulename"]);
 
         self::send_rabbit($rabbit_object);
     }
 
     public static function course_module_deleted(\core\event\course_module_deleted $event){
         $event_data = $event->get_data();
+
+        $moduleCore = self::getModule(
+            $event_data["other"]["instanceid"],
+            $event_data["courseid"],
+            $event_data["other"]["modulename"]
+        );
+
         $fired_at = gmdate('Y-m-d\TH:i:s.000\Z',$event_data["timecreated"]);
         $rabbit_object["contextid"] = $event_data["contextid"];
         $rabbit_object["other"]["message_config"]["eventname"] = 'course_module_deleted';
@@ -350,7 +360,7 @@ class local_collector_alert_bun_observer
         $rabbit_object["other"]["message_data"]['fired_at']= $fired_at;
         $rabbit_object["other"]["message_data"]["uuid"] = \core\uuid::generate();
         $rabbit_object["other"]["message_data"]["courseId"] = $event->courseid;
-        $rabbit_object["other"]["message_data"]["module"] = $event->objectid;
+        $rabbit_object["other"]["message_data"]["module"] = self::courseModule($moduleCore,$event_data["other"]["modulename"]);
 
         self::send_rabbit($rabbit_object);
     }
@@ -358,7 +368,13 @@ class local_collector_alert_bun_observer
     public static function course_module_updated(\core\event\course_module_updated $event){
         $event_data = $event->get_data();
 
-        $course_module = get_coursemodule_from_id('', $event_data['objectid'], $event->courseid, false, MUST_EXIST);
+        $moduleCore = self::getModule(
+            $event_data["other"]["instanceid"],
+            $event_data["courseid"],
+            $event_data["other"]["modulename"]
+        );
+
+        error_log(json_encode($moduleCore));
 
         $fired_at = gmdate('Y-m-d\TH:i:s.000\Z',$event_data["timecreated"]);
         $rabbit_object["contextid"] = $event_data["contextid"];
@@ -368,13 +384,53 @@ class local_collector_alert_bun_observer
         $rabbit_object["other"]["message_data"]['fired_at']= $fired_at;
         $rabbit_object["other"]["message_data"]["uuid"] = \core\uuid::generate();
         $rabbit_object["other"]["message_data"]["courseId"] = $event->courseid;
-        $rabbit_object["other"]["message_data"]["module"] = $course_module;
+        //$rabbit_object["other"]["message_data"]["module"] = $course_module;
 
-        self::send_rabbit($rabbit_object);
+        //self::send_rabbit($rabbit_object);
     }
     public static function send_rabbit($rabbit_object){
-        $event_to_send = \local_message_broker\event\published_message::create_from_object($rabbit_object);
-        $event_to_send->trigger();
+        error_log(json_encode($rabbit_object));
     }
 
+    public static function getModule($instanceid,$courseid,$modname){
+        global $DB;
+        return $DB->get_record($modname,array('id'=>$instanceid, 'course'=>$courseid));
+    }
+
+    public static function getEndDateModule(stdClass $module){
+        $endDate = 0;
+        if (isset($module->timeavailableto)) {
+            $endDate = $module->timeavailableto;
+        } elseif (isset($module->cutoffdate)) {
+            $endDate = $module->cutoffdate;
+        } elseif (isset($module->timeclose)) {
+            $endDate = $module->timeclose;
+        } elseif (isset($module->deadline)) {
+            $endDate = $module->deadline;
+        } elseif (isset($module->submissionend)) {
+            $endDate = $module->submissionend;
+        }
+
+        return $endDate;
+    }
+
+    public static function getStartDateModule(stdClass $module){
+        $startDate = 0;
+        if(isset($module->allowsubmissionsfromdate)){
+            $startDate = $module->allowsubmissionsfromdate;
+        }
+        return $startDate;
+    }
+
+    public static function courseModule($module,$typemod){
+        $courseModule = new stdClass();
+        $courseModule->id = $module->id;
+        $courseModule->courseId = $module->course;
+        $courseModule->name = $module->name;
+        $courseModule->type = $typemod;
+        $courseModule->url = 'por hacer';
+        $courseModule->startDate = self::getStartDateModule($module);
+        $courseModule->endDate = self::getEndDateModule($module);
+        return $courseModule;
+    }
 }
