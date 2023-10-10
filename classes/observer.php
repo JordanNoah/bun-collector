@@ -191,9 +191,11 @@ class local_collector_alert_bun_observer
     //role assigned
     public static function role_assigned(\core\event\role_assigned $event){
         try {
+            global $DB;
             $event_data = $event->get_data();
             $context = context_course::instance($event_data["courseid"]);
-            $roles = array_values(get_user_roles($context, $event_data["relateduserid"], true));
+            $roles = $DB->get_record('role_assignments',array("id"=>$event_data['other']['id']));
+            $roles->courseid = $event_data["courseid"];
 
             $fired_at = gmdate('Y-m-d\TH:i:s.000\Z',$event_data["timecreated"]);
             $rabbit_object["contextid"] = $event_data["contextid"];
@@ -202,8 +204,7 @@ class local_collector_alert_bun_observer
             $rabbit_object["other"]["message_data"]['institution']["modality"]= get_config('local_message_broker', 'modality');
             $rabbit_object["other"]["message_data"]['fired_at']= $fired_at;
             $rabbit_object["other"]["message_data"]["uuid"] = \core\uuid::generate();
-            $rabbit_object["other"]["message_data"]["roles"] = $roles;
-
+            $rabbit_object["other"]["message_data"]["role"] = $roles;
             self::send_rabbit($rabbit_object);
         }catch (Exception $e){
             error_log($e);
@@ -223,6 +224,8 @@ class local_collector_alert_bun_observer
             $rabbit_object["other"]["message_data"]["role"] = $event_data["objectid"];
             $rabbit_object["other"]["message_data"]["courseid"] = $event_data["courseid"];
             $rabbit_object["other"]["message_data"]["userid"] = $event_data["relateduserid"];
+
+            error_log(json_encode($event_data));
 
             self::send_rabbit($rabbit_object);
         }catch (Exception $e){

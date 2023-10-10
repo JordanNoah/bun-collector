@@ -3,6 +3,6 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_collector_alert_bun'; // Full name of the plugin (used for diagnostics).
-$plugin->version  = 2023072512;    // The current module version (Date: YYYYMMDDXX).
+$plugin->version  = 2023072516;    // The current module version (Date: YYYYMMDDXX).
 $plugin->requires = 2022041200;    // Requires this Moodle version.
 $plugin->release   = '0.0.1';
