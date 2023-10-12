@@ -104,9 +104,10 @@ class external_users extends external_api {
 
     public static function get_users_pages_counter() {
         global $DB;
+        $limit = 10 ;
 
         return array(
-            "totalusers" => $DB->get_record_sql("select count(1) as 'total_rows' from mdl_user")->total_rows
+            "totalusers" => ceil($DB->get_record_sql("select count(1) as 'total_rows' from mdl_user")->total_rows / $limit)
         );
     }
 
