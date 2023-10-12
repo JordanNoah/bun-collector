@@ -63,5 +63,12 @@ $functions = [
         'type' => 'read',
         'loginrequired' => false,
         'ajax' => true
+    ],
+    'local_collector_alert_bun_get_role_assigned_enrolments_data' => [
+        'classname' => 'local_collector_alert_bun\external_role_assigned',
+        'methodname' => 'get_role_assigned_enrolments',
+        'type' => 'read',
+        'loginrequired' => false,
+        'ajax' => true
     ]
 ];
