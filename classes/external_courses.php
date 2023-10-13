@@ -91,16 +91,17 @@ class external_courses extends external_api {
 
     public static function get_courses_pages_counter(){
         global $DB;
+        $limit = 10;
 
         return array(
-            "totalusers" => $DB->get_record_sql("SELECT count(1) as 'total_rows' from mdl_course")->total_rows
+            "totalcourses" => ceil($DB->get_record_sql("SELECT count(1) as 'total_rows' from mdl_course")->total_rows / $limit)
         );
     }
 
     public static function get_courses_pages_counter_returns(){
         return new external_single_structure(
             array(
-                'totalusers' => new external_value(PARAM_INT)
+                'totalcourses' => new external_value(PARAM_INT)
             )
         );
     }
