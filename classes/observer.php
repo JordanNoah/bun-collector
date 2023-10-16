@@ -193,8 +193,11 @@ class local_collector_alert_bun_observer
         try {
             global $DB;
             $event_data = $event->get_data();
+            error_log(json_encode($event_data));
             $context = context_course::instance($event_data["courseid"]);
             $roles = $DB->get_record('role_assignments',array("id"=>$event_data['other']['id']));
+            $enrollment = $DB->get_record_sql('select * from mdl_user_enrolments as mue inner join mdl_enrol as me on me.id = mue.enrolid where mue.userid = '.$event_data["relateduserid"].' and me.courseid = '.$event_data["courseid"]);
+            $roles->enrolmentId = $enrollment->id;
             $roles->courseid = $event_data["courseid"];
 
             $fired_at = gmdate('Y-m-d\TH:i:s.000\Z',$event_data["timecreated"]);
