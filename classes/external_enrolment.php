@@ -18,8 +18,9 @@ class external_enrolment extends external_api {
 
     public static function get_enrolments_pages_counter(){
         global $DB;
+        $limit = 10;
         return array(
-            "totalenrolments" => $DB->get_record_sql("SELECT count(1) as total FROM mdl_user_enrolments")->total
+            "totalenrolments" => ceil($DB->get_record_sql("SELECT count(1) as total FROM mdl_user_enrolments")->total / $limit)
         );
     }
 
@@ -134,53 +135,65 @@ from  mdl_user_enrolments as mue inner join mdl_enrol as me on me.id = mue.enrol
 
         error_log(json_encode($enrolmentsReturn));
 
-        return $enrolmentsReturn;
+        return array(
+            "offset" => $offset,
+            "pagesmissing" => $totalpages - ($page + 1),
+            "totalpages" => $totalpages,
+            "enrolments" => $enrolmentsReturn
+        );
     }
 
     public static function get_enrolments_data_returns(){
-        return new external_multiple_structure(
-            new external_single_structure(
-                array(
-                    "id" => new external_value(PARAM_RAW),
-                    "status" => new external_value(PARAM_RAW),
-                    "enrolid" => new external_value(PARAM_RAW),
-                    "userid" => new external_value(PARAM_RAW),
-                    "timestart" => new external_value(PARAM_RAW),
-                    "timeend" => new external_value(PARAM_RAW),
-                    "modifierid" => new external_value(PARAM_RAW),
-                    "timecreated" => new external_value(PARAM_RAW),
-                    "timemodified" => new external_value(PARAM_RAW),
-                    "enrol" => new external_value(PARAM_RAW),
-                    "courseid" => new external_value(PARAM_RAW),
-                    "sortorder" => new external_value(PARAM_RAW),
-                    "name" => new external_value(PARAM_RAW),
-                    "enrolperiod" => new external_value(PARAM_RAW),
-                    "enrolstartdate" => new external_value(PARAM_RAW),
-                    "enrolenddate" => new external_value(PARAM_RAW),
-                    "expirynotify" => new external_value(PARAM_RAW),
-                    "expirythreshold" => new external_value(PARAM_RAW),
-                    "notifyall" => new external_value(PARAM_RAW),
-                    "password" => new external_value(PARAM_RAW),
-                    "cost" => new external_value(PARAM_RAW),
-                    "currency" => new external_value(PARAM_RAW),
-                    "roleid" => new external_value(PARAM_RAW),
-                    "customint1" => new external_value(PARAM_RAW),
-                    "customint2" => new external_value(PARAM_RAW),
-                    "customint3" => new external_value(PARAM_RAW),
-                    "customint4" => new external_value(PARAM_RAW),
-                    "customint5" => new external_value(PARAM_RAW),
-                    "customint6" => new external_value(PARAM_RAW),
-                    "customint7" => new external_value(PARAM_RAW),
-                    "customint8" => new external_value(PARAM_RAW),
-                    "customchar1" => new external_value(PARAM_RAW),
-                    "customchar2" => new external_value(PARAM_RAW),
-                    "customchar3" => new external_value(PARAM_RAW),
-                    "customdec1" => new external_value(PARAM_RAW),
-                    "customdec2" => new external_value(PARAM_RAW),
-                    "customtext1" => new external_value(PARAM_RAW),
-                    "customtext2" => new external_value(PARAM_RAW),
-                    "customtext3" => new external_value(PARAM_RAW),
-                    "customtext4" => new external_value(PARAM_RAW)
+        return new external_single_structure(
+            array(
+                "offset" => new external_value(PARAM_INT),
+                "pagesmissing" => new external_value(PARAM_INT),
+                "totalpages" => new external_value(PARAM_INT),
+                "enrolments" => new external_multiple_structure(
+                    new external_single_structure(
+                        array(
+                            "id" => new external_value(PARAM_RAW),
+                            "status" => new external_value(PARAM_RAW),
+                            "enrolid" => new external_value(PARAM_RAW),
+                            "userid" => new external_value(PARAM_RAW),
+                            "timestart" => new external_value(PARAM_RAW),
+                            "timeend" => new external_value(PARAM_RAW),
+                            "modifierid" => new external_value(PARAM_RAW),
+                            "timecreated" => new external_value(PARAM_RAW),
+                            "timemodified" => new external_value(PARAM_RAW),
+                            "enrol" => new external_value(PARAM_RAW),
+                            "courseid" => new external_value(PARAM_RAW),
+                            "sortorder" => new external_value(PARAM_RAW),
+                            "name" => new external_value(PARAM_RAW),
+                            "enrolperiod" => new external_value(PARAM_RAW),
+                            "enrolstartdate" => new external_value(PARAM_RAW),
+                            "enrolenddate" => new external_value(PARAM_RAW),
+                            "expirynotify" => new external_value(PARAM_RAW),
+                            "expirythreshold" => new external_value(PARAM_RAW),
+                            "notifyall" => new external_value(PARAM_RAW),
+                            "password" => new external_value(PARAM_RAW),
+                            "cost" => new external_value(PARAM_RAW),
+                            "currency" => new external_value(PARAM_RAW),
+                            "roleid" => new external_value(PARAM_RAW),
+                            "customint1" => new external_value(PARAM_RAW),
+                            "customint2" => new external_value(PARAM_RAW),
+                            "customint3" => new external_value(PARAM_RAW),
+                            "customint4" => new external_value(PARAM_RAW),
+                            "customint5" => new external_value(PARAM_RAW),
+                            "customint6" => new external_value(PARAM_RAW),
+                            "customint7" => new external_value(PARAM_RAW),
+                            "customint8" => new external_value(PARAM_RAW),
+                            "customchar1" => new external_value(PARAM_RAW),
+                            "customchar2" => new external_value(PARAM_RAW),
+                            "customchar3" => new external_value(PARAM_RAW),
+                            "customdec1" => new external_value(PARAM_RAW),
+                            "customdec2" => new external_value(PARAM_RAW),
+                            "customtext1" => new external_value(PARAM_RAW),
+                            "customtext2" => new external_value(PARAM_RAW),
+                            "customtext3" => new external_value(PARAM_RAW),
+                            "customtext4" => new external_value(PARAM_RAW)
+                        )
+                    )
                 )
             )
         );

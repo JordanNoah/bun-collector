@@ -50,6 +50,13 @@ $functions = [
         'loginrequired' => false,
         'ajax' => true
     ],
+    'local_collector_alert_bun_get_general_modules_data' => [
+        'classname' => 'local_collector_alert_bun\external_general_modules',
+        'methodname' => 'get_general_modules_data',
+        'type' => 'read',
+        'loginrequired' => false,
+        'ajax' => true
+    ],
     'local_collector_alert_bun_get_enrolments_data' => [
         'classname' => 'local_collector_alert_bun\external_enrolment',
         'methodname' => 'get_enrolments_data',
