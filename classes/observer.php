@@ -94,15 +94,15 @@ class local_collector_alert_bun_observer
             $event_data = $event->get_data();
             $fired_at = gmdate('Y-m-d\TH:i:s.000\Z',$event_data["timecreated"]);
 
-            $rabbit_object["contextid"] = $event_data["contextid"];
+            $rabbit_object["contextid"] = 1;
             $rabbit_object["other"]["message_config"]["eventname"] = 'course_deleted';
             $rabbit_object["other"]["message_data"]['institution']["institution_abbreviation"] = get_config('local_message_broker', 'institutionname');
             $rabbit_object["other"]["message_data"]['institution']["modality"]= get_config('local_message_broker', 'modality');
             $rabbit_object["other"]["message_data"]['fired_at']= $fired_at;
             $rabbit_object["other"]["message_data"]["uuid"] = \core\uuid::generate();
-            $rabbit_object["other"]["message_data"]["course_id"] = $event_data["courseid"];
+            $rabbit_object["other"]["message_data"]["courseid"] = $event_data["courseid"];
 
-            //self::send_rabbit($rabbit_object);
+            self::send_rabbit($rabbit_object);
         }catch (Exception $e){
             error_log($e);
         }
@@ -395,7 +395,8 @@ class local_collector_alert_bun_observer
         //self::send_rabbit($rabbit_object);
     }
     public static function send_rabbit($rabbit_object){
-        error_log(json_encode($rabbit_object));
+        $event_to_send = \local_message_broker\event\published_message::create_from_object($rabbit_object);
+        $event_to_send->trigger();
     }
 
     public static function getModule($instanceid,$courseid,$modname){
