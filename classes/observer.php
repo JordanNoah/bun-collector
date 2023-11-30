@@ -102,7 +102,7 @@ class local_collector_alert_bun_observer
             $rabbit_object["other"]["message_data"]["uuid"] = \core\uuid::generate();
             $rabbit_object["other"]["message_data"]["course_id"] = $event_data["courseid"];
 
-            //self::send_rabbit($rabbit_object);
+            self::send_rabbit($rabbit_object);
         }catch (Exception $e){
             error_log($e);
         }
@@ -161,6 +161,7 @@ class local_collector_alert_bun_observer
             $rabbit_object["other"]["message_data"]['fired_at']= $fired_at;
             $rabbit_object["other"]["message_data"]["uuid"] = \core\uuid::generate();
             $rabbit_object["other"]["message_data"]["enrolmentId"] = $event_data["objectid"];
+            $rabbit_object["other"]["message_data"]["courseId"] = $event_data["courseid"];
 
             self::send_rabbit($rabbit_object);
         }catch (Exception $e){
@@ -224,8 +225,6 @@ class local_collector_alert_bun_observer
             $rabbit_object["other"]["message_data"]["role"] = $event_data["objectid"];
             $rabbit_object["other"]["message_data"]["courseid"] = $event_data["courseid"];
             $rabbit_object["other"]["message_data"]["userid"] = $event_data["relateduserid"];
-
-            error_log(json_encode($event_data));
 
             self::send_rabbit($rabbit_object);
         }catch (Exception $e){
@@ -377,8 +376,6 @@ class local_collector_alert_bun_observer
             $event_data["other"]["modulename"]
         );
 
-        error_log(json_encode($moduleCore));
-
         $fired_at = gmdate('Y-m-d\TH:i:s.000\Z',$event_data["timecreated"]);
         $rabbit_object["contextid"] = $event_data["contextid"];
         $rabbit_object["other"]["message_config"]["eventname"] = 'course_module_updated';
@@ -387,12 +384,13 @@ class local_collector_alert_bun_observer
         $rabbit_object["other"]["message_data"]['fired_at']= $fired_at;
         $rabbit_object["other"]["message_data"]["uuid"] = \core\uuid::generate();
         $rabbit_object["other"]["message_data"]["courseId"] = $event->courseid;
-        //$rabbit_object["other"]["message_data"]["module"] = $course_module;
+        $rabbit_object["other"]["message_data"]["module"] = self::courseModule($moduleCore,$event_data["other"]["modulename"]);
 
-        //self::send_rabbit($rabbit_object);
+        self::send_rabbit($rabbit_object);
     }
     public static function send_rabbit($rabbit_object){
-        error_log(json_encode($rabbit_object));
+        $event_to_send = \local_message_broker\event\published_message::create_from_object($rabbit_object);
+        $event_to_send->trigger();
     }
 
     public static function getModule($instanceid,$courseid,$modname){
