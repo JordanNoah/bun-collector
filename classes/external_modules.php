@@ -26,7 +26,7 @@ class external_modules extends external_api {
                                                                     FROM mdl_course_modules AS cm 
                                                                         INNER JOIN mdl_modules AS m ON cm.module = m.id 
                                                                     where m.name = "'.$type.'"
-                                                                    order by cm.id asc')->total_exist);
+                                                                    order by cm.id asc')->total_exist / $limit);
 
         $courseModule = array_values($DB->get_records_sql('SELECT cm.*, m.name as type, module.name as name
                                                                     FROM mdl_course_modules AS cm 
@@ -50,6 +50,14 @@ class external_modules extends external_api {
             $courseObject->endDate = self::getEndDateModule($element);
             $modules[] = $courseObject;
         }
+        error_log('SELECT cm.*, m.name as type, module.name as name
+                                                                    FROM mdl_course_modules AS cm 
+                                                                        INNER JOIN mdl_modules AS m ON cm.module = m.id
+                                                                        INNER JOIN mdl_'.$type.' AS module ON module.id = cm.instance
+                                                                    where m.name = "'.$type.'"
+                                                                    order by cm.id asc
+                                                                    LIMIT 10 OFFSET '.$offset);
+        error_log(json_encode($modules));
         return $modules;
     }
     public static function get_modules_data_returns(){
@@ -79,6 +87,7 @@ class external_modules extends external_api {
         $existingModules = array_values($DB->get_records_sql("SELECT * FROM mdl_modules"));
 
         $modules = array();
+        $limit = 10;
 
         for ($i = 0; $i < count($existingModules); $i++) {
             $element = $existingModules[$i];
@@ -91,7 +100,7 @@ class external_modules extends external_api {
 
             $moduleCounter = new stdClass();
             $moduleCounter->type = $element->name;
-            $moduleCounter->totalexist = $courseModules->total_exist;
+            $moduleCounter->totalexist = ceil($courseModules->total_exist / $limit);
             $modules[] = $moduleCounter;
         }
 

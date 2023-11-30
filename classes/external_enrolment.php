@@ -133,8 +133,6 @@ from  mdl_user_enrolments as mue inner join mdl_enrol as me on me.id = mue.enrol
             $enrolmentsReturn[] = $enrolmentObject;
         }
 
-        error_log(json_encode($enrolmentsReturn));
-
         return array(
             "offset" => $offset,
             "pagesmissing" => $totalpages - ($page + 1),

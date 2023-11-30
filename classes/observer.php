@@ -94,13 +94,13 @@ class local_collector_alert_bun_observer
             $event_data = $event->get_data();
             $fired_at = gmdate('Y-m-d\TH:i:s.000\Z',$event_data["timecreated"]);
 
-            $rabbit_object["contextid"] = $event_data["contextid"];
+            $rabbit_object["contextid"] = 1;
             $rabbit_object["other"]["message_config"]["eventname"] = 'course_deleted';
             $rabbit_object["other"]["message_data"]['institution']["institution_abbreviation"] = get_config('local_message_broker', 'institutionname');
             $rabbit_object["other"]["message_data"]['institution']["modality"]= get_config('local_message_broker', 'modality');
             $rabbit_object["other"]["message_data"]['fired_at']= $fired_at;
             $rabbit_object["other"]["message_data"]["uuid"] = \core\uuid::generate();
-            $rabbit_object["other"]["message_data"]["course_id"] = $event_data["courseid"];
+            $rabbit_object["other"]["message_data"]["courseid"] = $event_data["courseid"];
 
             self::send_rabbit($rabbit_object);
         }catch (Exception $e){
@@ -194,8 +194,11 @@ class local_collector_alert_bun_observer
         try {
             global $DB;
             $event_data = $event->get_data();
+            error_log(json_encode($event_data));
             $context = context_course::instance($event_data["courseid"]);
             $roles = $DB->get_record('role_assignments',array("id"=>$event_data['other']['id']));
+            $enrollment = $DB->get_record_sql('select * from mdl_user_enrolments as mue inner join mdl_enrol as me on me.id = mue.enrolid where mue.userid = '.$event_data["relateduserid"].' and me.courseid = '.$event_data["courseid"]);
+            $roles->enrolmentId = $enrollment->id;
             $roles->courseid = $event_data["courseid"];
 
             $fired_at = gmdate('Y-m-d\TH:i:s.000\Z',$event_data["timecreated"]);

@@ -67,6 +67,12 @@ from  mdl_user_enrolments as mue inner join mdl_enrol as me on me.id = mue.enrol
             $element = $enrolments[$i];
             $courseContext = \context_course::instance($element->courseid);
             $rolesAssigned = array_values($DB->get_records_sql('SELECT * FROM mdl_role_assignments WHERE contextid = '.$courseContext->id.' AND userid = '.$element->userid));
+
+            array_walk($rolesAssigned,function ($e) use ($element){
+                $e->courseid = $element->courseid;
+                $e->enrolmentId = $element->id;
+            });
+
             $enrolmentObject = new stdClass();
             $enrolmentObject->id = $element->id;
             $enrolmentObject->userid = $element->userid;
@@ -96,7 +102,9 @@ from  mdl_user_enrolments as mue inner join mdl_enrol as me on me.id = mue.enrol
                                 'modifierid' => new external_value(PARAM_TEXT),
                                 'component' => new external_value(PARAM_TEXT),
                                 'itemid' => new external_value(PARAM_TEXT),
-                                'sortorder' => new external_value(PARAM_TEXT)
+                                'sortorder' => new external_value(PARAM_TEXT),
+                                'courseid' => new external_value(PARAM_INT),
+                                'enrolmentId' => new external_value(PARAM_INT)
                             )
                         )
                     )
